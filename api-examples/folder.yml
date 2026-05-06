@@ -1,0 +1,7 @@
+info:
+  name: api-examples
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

@@ -1,7 +1,7 @@
 info:
   name: 01-table-visualization
   type: http
-  seq: 5
+  seq: 1
   tags:
     - test
     - hello
