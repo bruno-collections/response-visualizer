@@ -6,6 +6,53 @@ Using the `bru.visualize('html')` method, you can render custom HTML, including 
 
 This helps you move beyond raw JSON and build interactive, visual insights directly inside your API workflow.
 
+### Table Visualization 
+
+```js
+
+bru.visualize('table', {
+  name: 'usersTable',
+  provider: 'ag-grid',
+  props: {
+    rowData: [],
+    columnDefinitions: []
+  }
+});
+```
+
+### HTML Visualization
+
+```js
+
+bru.visualize('html', {
+  name: 'htmlView',
+  content: `
+    <h2>API Report</h2>
+    <p>Custom HTML content</p>
+  `
+});
+
+```
+
+### Handlebar Visualization 
+
+```js
+
+bru.visualize('html', {
+  name: 'userCard',
+  template: `
+    <div>
+      <h2>{{name}}</h2>
+      <p>{{email}}</p>
+    </div>
+  `,
+  data: {
+    name: "Bruno",
+    email: "bruno@test.com"
+  },
+  options: {}
+});
+```
 ---
 
 ## 🚀 What this example includes
@@ -20,4 +67,4 @@ This helps you move beyond raw JSON and build interactive, visual insights direc
 ## 📖 Learn More
 
 👉 Read more about Response Visualizer in Bruno docs:  
-https://docs.usebruno.com/advanced-guides/visualiz
+https://docs.usebruno.com/advanced-guides/visualize
