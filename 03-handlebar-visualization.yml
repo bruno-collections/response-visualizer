@@ -1,0 +1,42 @@
+info:
+  name: 03-handlebar-visualization
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: https://echo.usebruno.com
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        bru.visualize('html', {
+          name: 'apiStatus',
+          template: `
+            <div style="padding:16px; border-radius:10px; background:#f9fafb;">
+              <h2>API Status</h2>
+              <p>Status Code: 
+                <strong style="color: {{#if success}}green{{else}}red{{/if}}">
+                  {{status}}
+                </strong>
+              </p>
+              <p>Message: {{message}}</p>
+            </div>
+          `,
+          data: {
+            status: res.status,
+            message: res.body.message || "Success",
+            success: res.status === 200
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

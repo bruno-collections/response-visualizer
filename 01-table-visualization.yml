@@ -1,0 +1,200 @@
+info:
+  name: 01-table-visualization
+  type: http
+  seq: 5
+  tags:
+    - test
+    - hello
+
+http:
+  method: POST
+  url: https://echo.usebruno.com
+  body:
+    type: json
+    data: |-
+      [
+        {
+          "id": 1,
+          "user": "Alice",
+          "email": "alice@test.com",
+          "method": "GET",
+          "endpoint": "/users",
+          "status": 200,
+          "responseTime": 120,
+          "timestamp": "2026-05-01T10:30:00Z"
+        },
+        {
+          "id": 2,
+          "user": "Bob",
+          "email": "bob@test.com",
+          "method": "POST",
+          "endpoint": "/orders",
+          "status": 201,
+          "responseTime": 180,
+          "timestamp": "2026-05-01T10:32:00Z"
+        },
+        {
+          "id": 3,
+          "user": "Charlie",
+          "email": "charlie@test.com",
+          "method": "GET",
+          "endpoint": "/products",
+          "status": 200,
+          "responseTime": 95,
+          "timestamp": "2026-05-01T10:35:00Z"
+        },
+        {
+          "id": 4,
+          "user": "David",
+          "email": "david@test.com",
+          "method": "DELETE",
+          "endpoint": "/orders/123",
+          "status": 204,
+          "responseTime": 150,
+          "timestamp": "2026-05-01T10:40:00Z"
+        },
+        {
+          "id": 5,
+          "user": "Emma",
+          "email": "emma@test.com",
+          "method": "PUT",
+          "endpoint": "/users/45",
+          "status": 200,
+          "responseTime": 210,
+          "timestamp": "2026-05-01T10:45:00Z"
+        },
+        {
+          "id": 6,
+          "user": "Frank",
+          "email": "frank@test.com",
+          "method": "PATCH",
+          "endpoint": "/users/45",
+          "status": 200,
+          "responseTime": 140,
+          "timestamp": "2026-05-01T10:50:00Z"
+        },
+        {
+          "id": 7,
+          "user": "Grace",
+          "email": "grace@test.com",
+          "method": "GET",
+          "endpoint": "/analytics",
+          "status": 200,
+          "responseTime": 110,
+          "timestamp": "2026-05-01T10:55:00Z"
+        },
+        {
+          "id": 8,
+          "user": "Henry",
+          "email": "henry@test.com",
+          "method": "POST",
+          "endpoint": "/payments",
+          "status": 201,
+          "responseTime": 190,
+          "timestamp": "2026-05-01T11:00:00Z"
+        },
+        {
+          "id": 9,
+          "user": "Isabella",
+          "email": "isabella@test.com",
+          "method": "GET",
+          "endpoint": "/reports",
+          "status": 200,
+          "responseTime": 130,
+          "timestamp": "2026-05-01T11:05:00Z"
+        },
+        {
+          "id": 10,
+          "user": "Jack",
+          "email": "jack@test.com",
+          "method": "PUT",
+          "endpoint": "/settings",
+          "status": 200,
+          "responseTime": 170,
+          "timestamp": "2026-05-01T11:10:00Z"
+        },
+        {
+          "id": 11,
+          "user": "Karen",
+          "email": "karen@test.com",
+          "method": "DELETE",
+          "endpoint": "/users/78",
+          "status": 204,
+          "responseTime": 160,
+          "timestamp": "2026-05-01T11:15:00Z"
+        },
+        {
+          "id": 12,
+          "user": "Leo",
+          "email": "leo@test.com",
+          "method": "GET",
+          "endpoint": "/dashboard",
+          "status": 200,
+          "responseTime": 100,
+          "timestamp": "2026-05-01T11:20:00Z"
+        },
+        {
+          "id": 13,
+          "user": "Mia",
+          "email": "mia@test.com",
+          "method": "POST",
+          "endpoint": "/notifications",
+          "status": 201,
+          "responseTime": 175,
+          "timestamp": "2026-05-01T11:25:00Z"
+        },
+        {
+          "id": 14,
+          "user": "Noah",
+          "email": "noah@test.com",
+          "method": "PATCH",
+          "endpoint": "/profile",
+          "status": 200,
+          "responseTime": 145,
+          "timestamp": "2026-05-01T11:30:00Z"
+        },
+        {
+          "id": 15,
+          "user": "Olivia",
+          "email": "olivia@test.com",
+          "method": "GET",
+          "endpoint": "/logs",
+          "status": 200,
+          "responseTime": 125,
+          "timestamp": "2026-05-01T11:35:00Z"
+        }
+      ]
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Table Visualization
+
+        const users = res.body;
+
+        const rowData = users.map(user => ({
+          id: user.id,
+          name: user.user,
+          email: user.email,
+          status: user.status,
+        }));
+
+        const columnDefinitions = [
+          { field: "id", filter: true },
+          { field: "name", filter: true },
+          { field: "email", filter: true },
+          { field: "status", filter: false },
+        ];
+
+        bru.visualize('table', {
+          name: 'usersTable',
+          provider: 'ag-grid',
+          props: { rowData, columnDefinitions }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

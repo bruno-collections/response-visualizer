@@ -1,0 +1,72 @@
+info:
+  name: 04-pie-chart
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: https://echo.usebruno.com
+  body:
+    type: json
+    data: |-
+      {
+        "title": "API Usage Analytics",
+        "methods": {
+          "GET": 980,
+          "POST": 420,
+          "PUT": 210,
+          "PATCH": 140,
+          "DELETE": 160
+        },
+        "status": {
+          "200": 1500,
+          "201": 300,
+          "400": 120,
+          "500": 80
+        }
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const data = res.body;
+
+        bru.visualize('html', {
+          name: 'Pie Chart',
+          content: `
+            <div style="padding:20px; font-family: Arial;">
+              <h2>API Methods Distribution</h2>
+              <canvas id="pieChart" width="400" height="400"></canvas>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+              const ctx = document.getElementById('pieChart').getContext('2d');
+
+              new Chart(ctx, {
+                type: 'pie',
+                data: {
+                  labels: ${JSON.stringify(Object.keys(data.methods))},
+                  datasets: [{
+                    data: ${JSON.stringify(Object.values(data.methods))},
+                    backgroundColor: [
+                      '#60a5fa',
+                      '#34d399',
+                      '#fbbf24',
+                      '#f87171',
+                      '#a78bfa'
+                    ]
+                  }]
+                }
+              });
+            </script>
+          `
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

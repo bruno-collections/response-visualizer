@@ -1,0 +1,157 @@
+info:
+  name: 02-html-visualization
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: https://echo.usebruno.com
+  body:
+    type: json
+    data: |-
+      {
+        "report": {
+          "title": "API Performance Dashboard",
+          "environment": "Production",
+          "generatedAt": "2026-05-06T10:30:00Z",
+          "timeRange": "Last 24 Hours"
+        },
+        "summary": {
+          "totalRequests": 18420,
+          "successfulRequests": 17980,
+          "failedRequests": 440,
+          "successRate": 97.61,
+          "averageResponseTime": 148,
+          "p95ResponseTime": 420,
+          "activeUsers": 1240
+        },
+        "traffic": {
+          "getRequests": 9800,
+          "postRequests": 4120,
+          "putRequests": 1860,
+          "patchRequests": 920,
+          "deleteRequests": 1720
+        },
+        "topEndpoint": {
+          "method": "GET",
+          "path": "/api/users",
+          "requests": 5420,
+          "averageResponseTime": 96,
+          "successRate": 99.2
+        },
+        "slowestEndpoint": {
+          "method": "POST",
+          "path": "/api/reports/export",
+          "requests": 320,
+          "averageResponseTime": 1250,
+          "successRate": 94.8
+        },
+        "errors": {
+          "total": 440,
+          "clientErrors": 310,
+          "serverErrors": 130,
+          "mostCommonStatus": 404,
+          "mostCommonMessage": "Resource not found"
+        },
+        "systemHealth": {
+          "cpuUsage": 62,
+          "memoryUsage": 71,
+          "diskUsage": 48,
+          "uptime": "99.98%"
+        }
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const data = res.body;
+
+        const htmlContent = `
+            <div style="font-family: Arial, sans-serif; padding: 24px; background: #f8fafc; color: #111827;">
+              <div style="margin-bottom: 24px;">
+                <h1 style="margin: 0; font-size: 28px;">${data.report.title}</h1>
+                <p style="margin: 6px 0 0; color: #6b7280;">
+                  Environment: ${data.report.environment} | ${data.report.timeRange} | Generated: ${new Date(data.report.generatedAt).toLocaleString()}
+                </p>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                  <p style="margin: 0; color: #6b7280;">Total Requests</p>
+                  <h2 style="margin: 8px 0 0;">${data.summary.totalRequests}</h2>
+                </div>
+
+                <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                  <p style="margin: 0; color: #6b7280;">Success Rate</p>
+                  <h2 style="margin: 8px 0 0; color: #16a34a;">${data.summary.successRate}%</h2>
+                </div>
+
+                <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                  <p style="margin: 0; color: #6b7280;">Avg Response Time</p>
+                  <h2 style="margin: 8px 0 0; color: #2563eb;">${data.summary.averageResponseTime} ms</h2>
+                </div>
+
+                <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                  <p style="margin: 0; color: #6b7280;">Failed Requests</p>
+                  <h2 style="margin: 8px 0 0; color: #dc2626;">${data.summary.failedRequests}</h2>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px;">
+                  <h3 style="margin-top: 0;">Traffic by Method</h3>
+                  <p>GET: ${data.traffic.getRequests}</p>
+                  <p>POST: ${data.traffic.postRequests}</p>
+                  <p>PUT: ${data.traffic.putRequests}</p>
+                  <p>PATCH: ${data.traffic.patchRequests}</p>
+                  <p>DELETE: ${data.traffic.deleteRequests}</p>
+                </div>
+
+                <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px;">
+                  <h3 style="margin-top: 0;">System Health</h3>
+                  <p>CPU Usage: ${data.systemHealth.cpuUsage}%</p>
+                  <p>Memory Usage: ${data.systemHealth.memoryUsage}%</p>
+                  <p>Disk Usage: ${data.systemHealth.diskUsage}%</p>
+                  <p>Uptime: ${data.systemHealth.uptime}</p>
+                </div>
+
+                <div style="background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 12px; padding: 18px;">
+                  <h3 style="margin-top: 0; color: #166534;">Top Endpoint</h3>
+                  <p><strong>${data.topEndpoint.method}</strong> ${data.topEndpoint.path}</p>
+                  <p>Requests: ${data.topEndpoint.requests}</p>
+                  <p>Avg Response Time: ${data.topEndpoint.averageResponseTime} ms</p>
+                  <p>Success Rate: ${data.topEndpoint.successRate}%</p>
+                </div>
+
+                <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 18px;">
+                  <h3 style="margin-top: 0; color: #9a3412;">Slowest Endpoint</h3>
+                  <p><strong>${data.slowestEndpoint.method}</strong> ${data.slowestEndpoint.path}</p>
+                  <p>Requests: ${data.slowestEndpoint.requests}</p>
+                  <p>Avg Response Time: ${data.slowestEndpoint.averageResponseTime} ms</p>
+                  <p>Success Rate: ${data.slowestEndpoint.successRate}%</p>
+                </div>
+              </div>
+
+              <div style="margin-top: 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 18px;">
+                <h3 style="margin-top: 0; color: #991b1b;">Error Summary</h3>
+                <p>Total Errors: ${data.errors.total}</p>
+                <p>Client Errors: ${data.errors.clientErrors}</p>
+                <p>Server Errors: ${data.errors.serverErrors}</p>
+                <p>Most Common Status: ${data.errors.mostCommonStatus}</p>
+                <p>Most Common Message: ${data.errors.mostCommonMessage}</p>
+              </div>
+            </div>
+          `
+
+        bru.visualize('html', {
+          name: 'API Performance Dashboard',
+          content: htmlContent
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
